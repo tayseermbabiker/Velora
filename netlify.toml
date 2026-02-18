@@ -5,8 +5,8 @@
   directory = "netlify/functions"
 
 [[redirects]]
-  from = "/go/:id"
-  to = "/.netlify/functions/go?id=:id"
+  from = "/go/*"
+  to = "/.netlify/functions/go"
   status = 200
 
 [[redirects]]

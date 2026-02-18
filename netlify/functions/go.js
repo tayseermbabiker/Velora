@@ -5,7 +5,12 @@ const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appqDOo8GXTDuKYCw';
 const TABLE_NAME = 'Businesses';
 
 exports.handler = async (event) => {
-  const id = event.queryStringParameters?.id;
+  // Try query param first, then extract from path (/go/recXXX)
+  let id = event.queryStringParameters?.id;
+  if (!id) {
+    const pathMatch = event.path.match(/\/go\/(\w+)/);
+    if (pathMatch) id = pathMatch[1];
+  }
   if (!id) {
     return { statusCode: 400, body: 'Missing id' };
   }
