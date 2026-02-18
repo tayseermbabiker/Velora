@@ -1,0 +1,26 @@
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/go/:id"
+  to = "/.netlify/functions/go?id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/subscribe"
+  to = "/.netlify/functions/subscribe"
+  status = 200
+
+[[redirects]]
+  from = "/api/businesses"
+  to = "/.netlify/functions/businesses"
+  status = 200
+
+# SPA fallback for category pages
+[[redirects]]
+  from = "/new-york/*"
+  to = "/index.html"
+  status = 200

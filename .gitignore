@@ -1,0 +1,6 @@
+node_modules/
+.env
+.netlify/
+*.log
+PRD.txt
+New Text Document.txt

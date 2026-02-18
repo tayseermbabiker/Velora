@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velora - Luxury Services Directory | New York</title>
+  <meta name="description" content="Find trusted luxury services in New York. Med spas, private chefs, interior designers and more - curated for discerning clients.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="logo">VELORA</a>
+      <div class="nav-links">
+        <a href="#categories">Categories</a>
+        <a href="#featured">Featured</a>
+        <a href="#about">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-label">New York City</p>
+      <h1>Find trusted luxury services.</h1>
+      <p class="hero-sub">Med spas, private chefs, interior designers and more — curated for the city's most discerning clients.</p>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search businesses..." autocomplete="off">
+        <button id="search-btn">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="categories" id="categories">
+    <div class="container">
+      <h2>Categories</h2>
+      <div class="category-grid">
+        <a href="/new-york/med-spas" class="category-card" data-category="Med Spas">
+          <div class="category-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          </div>
+          <h3>Med Spas</h3>
+          <p>Aesthetic clinics and treatments</p>
+          <span class="category-count" data-cat="Med Spas">0 listings</span>
+        </a>
+        <a href="/new-york/private-chefs" class="category-card" data-category="Private Chefs">
+          <div class="category-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6 2 10c0 2.5 1.5 4.5 3.5 5.5V20a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4.5C20.5 14.5 22 12.5 22 10c0-4-4.48-8-10-8z"/></svg>
+          </div>
+          <h3>Private Chefs</h3>
+          <p>In-home dining experiences</p>
+          <span class="category-count" data-cat="Private Chefs">0 listings</span>
+        </a>
+        <a href="/new-york/interior-designers" class="category-card" data-category="Interior Designers">
+          <div class="category-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <h3>Interior Designers</h3>
+          <p>High-end residential design</p>
+          <span class="category-count" data-cat="Interior Designers">0 listings</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Businesses -->
+  <section class="featured" id="featured">
+    <div class="container">
+      <h2>Featured</h2>
+      <div class="business-grid" id="featured-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- All Businesses (category page view) -->
+  <section class="listings hidden" id="listings">
+    <div class="container">
+      <div class="listings-header">
+        <h2 id="listings-title">All Businesses</h2>
+        <select id="sort-select">
+          <option value="rating">Highest Rated</option>
+          <option value="reviews">Most Reviews</option>
+          <option value="name">Name A-Z</option>
+        </select>
+      </div>
+      <div class="business-grid" id="listings-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="container">
+      <h2>About Velora</h2>
+      <p>Velora is a curated directory of premium services in New York City. We help discerning clients discover trusted luxury providers — from med spas and private chefs to interior designers and beyond.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo">VELORA</span>
+      <div class="footer-links">
+        <a href="#categories">Categories</a>
+        <a href="#about">About</a>
+        <a href="mailto:hello@velora.com">Contact</a>
+      </div>
+      <p class="copyright">Velora. New York City.</p>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
