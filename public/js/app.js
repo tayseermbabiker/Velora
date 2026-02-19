@@ -1,43 +1,48 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  const path = window.location.pathname;
+let allBusinesses = [];
 
-  // Detect category page: /new-york/med-spas
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load all businesses from static JSON (one request, zero API calls)
+  try {
+    const res = await fetch('businesses.json');
+    if (!res.ok) throw new Error('Failed to load data');
+    const data = await res.json();
+    if (data.success && data.businesses) {
+      allBusinesses = data.businesses;
+    }
+  } catch (e) {
+    console.error('Failed to load businesses:', e);
+  }
+
+  const path = window.location.pathname;
   const categoryMatch = path.match(/^\/new-york\/([\w-]+)\/?$/);
 
   if (categoryMatch) {
     const slug = categoryMatch[1];
     const category = SLUG_TO_CATEGORY[slug];
-    if (category) {
-      await loadCategoryPage(category);
-    }
+    if (category) loadCategoryPage(category);
     return;
   }
 
-  // Home page
-  await loadHomePage();
+  loadHomePage();
 });
 
-async function fetchBusinesses(filterFormula) {
-  const params = new URLSearchParams();
-  if (filterFormula) params.set('filterByFormula', filterFormula);
-  params.set('maxRecords', '100');
-
-  const res = await fetch(`/api/businesses?${params}`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.records || [];
+function filterBusinesses(predicate) {
+  return allBusinesses.filter(predicate).map(b => ({
+    id: b.id,
+    fields: b
+  }));
 }
 
-async function loadHomePage() {
-  // Load featured businesses
-  const featured = await fetchBusinesses('{featured} = TRUE()');
+function loadHomePage() {
+  // Featured businesses
+  let featured = filterBusinesses(b => b.featured);
   const featuredGrid = document.getElementById('featured-grid');
 
   if (featured.length > 0) {
     featured.forEach(biz => featuredGrid.appendChild(createBusinessCard(biz)));
   } else {
-    // If no featured, show latest
-    const all = await fetchBusinesses('');
+    // If no featured, show latest 6
+    const all = filterBusinesses(() => true);
     if (all.length > 0) {
       all.slice(0, 6).forEach(biz => featuredGrid.appendChild(createBusinessCard(biz)));
     } else {
@@ -45,11 +50,11 @@ async function loadHomePage() {
     }
   }
 
-  // Update category counts
+  // Category counts (instant, no API calls)
   for (const [category, slug] of Object.entries(CATEGORY_SLUGS)) {
-    const records = await fetchBusinesses(`{category} = "${category}"`);
+    const count = allBusinesses.filter(b => b.category === category).length;
     const el = document.querySelector(`[data-cat="${category}"]`);
-    if (el) el.textContent = `${records.length} listing${records.length !== 1 ? 's' : ''}`;
+    if (el) el.textContent = `${count} listing${count !== 1 ? 's' : ''}`;
   }
 
   // Search
@@ -62,12 +67,16 @@ async function loadHomePage() {
   });
 }
 
-async function doSearch(query) {
+function doSearch(query) {
   if (!query.trim()) return;
-  const formula = `SEARCH(LOWER("${query.trim()}"), LOWER({name}))`;
-  const results = await fetchBusinesses(formula);
+  const q = query.trim().toLowerCase();
+  const results = filterBusinesses(b =>
+    (b.name || '').toLowerCase().includes(q) ||
+    (b.category || '').toLowerCase().includes(q) ||
+    (b.neighborhood || '').toLowerCase().includes(q) ||
+    (b.services || '').toLowerCase().includes(q)
+  );
 
-  // Show listings section, hide featured
   document.getElementById('featured').classList.add('hidden');
   document.getElementById('listings').classList.remove('hidden');
   document.getElementById('listings-title').textContent = `Results for "${query}"`;
@@ -82,10 +91,9 @@ async function doSearch(query) {
   }
 }
 
-async function loadCategoryPage(category) {
+function loadCategoryPage(category) {
   document.title = `${category} in New York | Velora`;
 
-  // Hide home sections, show listings
   document.querySelector('.hero').classList.add('hidden');
   document.querySelector('.categories').classList.add('hidden');
   document.getElementById('featured').classList.add('hidden');
@@ -94,7 +102,7 @@ async function loadCategoryPage(category) {
   document.getElementById('listings').style.paddingTop = '100px';
   document.getElementById('listings-title').textContent = `${category} in New York`;
 
-  const records = await fetchBusinesses(`{category} = "${category}"`);
+  const records = filterBusinesses(b => b.category === category);
   const grid = document.getElementById('listings-grid');
   grid.innerHTML = '';
 
@@ -105,7 +113,6 @@ async function loadCategoryPage(category) {
     grid.innerHTML = '<div class="empty-state">Listings coming soon.</div>';
   }
 
-  // Sort handler
   document.getElementById('sort-select').addEventListener('change', (e) => {
     sortBusinesses(records, e.target.value);
     grid.innerHTML = '';

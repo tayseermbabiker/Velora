@@ -4,6 +4,9 @@
   "description": "Luxury services directory for NYC",
   "scripts": {
     "scrape": "node scrapers/run-all.js",
+    "scrape:maps": "node scrapers/google-maps.js",
+    "scrape:enrich": "node scrapers/enrich-businesses.js",
+    "export": "node scripts/export-businesses.js",
     "scrape:medspa": "node scrapers/yelp-med-spas.js",
     "scrape:chefs": "node scrapers/yelp-private-chefs.js",
     "scrape:designers": "node scrapers/yelp-interior-designers.js"
