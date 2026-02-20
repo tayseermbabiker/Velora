@@ -27,78 +27,139 @@ async function enrichFromGoogleMaps(context, bizName, bizCity) {
 
   try {
     const query = `${bizName} ${bizCity}`;
-    const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+    // Force English with hl=en
+    const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}?hl=en`;
     await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
-    await sleep(3000);
+    await sleep(4000);
 
-    // Click first result if we're on search results (not direct place page)
+    // Click first result if on search results page
     const firstResult = await page.$('div[role="feed"] a[href*="/maps/place/"]');
     if (firstResult) {
       await firstResult.click();
-      await sleep(3000);
+      await sleep(4000);
     }
 
-    // Extract services/amenities
+    // --- HOURS: click the hours section to expand it ---
+    const hoursBtn = await page.$('button[data-item-id="oh"], div[aria-label*="hour" i], button[aria-label*="hour" i]');
+    if (hoursBtn) {
+      try {
+        await hoursBtn.click();
+        await sleep(1500);
+      } catch (e) {}
+    }
+
+    const hours = await page.evaluate(() => {
+      // Try the expanded hours table
+      const rows = [];
+      const trs = document.querySelectorAll('table.eK4R0e tr, table.WgFkxc tr, div[class*="opening-hours"] tr');
+      trs.forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        if (cells.length >= 2) {
+          const day = cells[0].textContent.trim();
+          const time = cells[1].textContent.trim();
+          if (day && time) rows.push(`${day}: ${time}`);
+        }
+      });
+      if (rows.length) return rows.join('\n');
+
+      // Try aria-label text that contains hours info
+      const els = document.querySelectorAll('[aria-label]');
+      for (const el of els) {
+        const label = el.getAttribute('aria-label') || '';
+        if (label.includes('Monday') && label.includes('Tuesday')) {
+          return label;
+        }
+      }
+
+      // Try the compact hours display
+      const compact = document.querySelector('div[aria-label*="hour" i]');
+      if (compact) {
+        const text = compact.textContent.trim();
+        if (text.length > 5 && text.length < 500) return text;
+      }
+
+      return '';
+    }).catch(() => '');
+
+    // --- SERVICES: look for About tab attributes ---
+    // Try clicking "About" tab if available
+    const aboutTab = await page.$('button[aria-label="About"]');
+    if (aboutTab) {
+      try {
+        await aboutTab.click();
+        await sleep(2000);
+      } catch (e) {}
+    }
+
     const services = await page.evaluate(() => {
       const items = [];
-      // Services from "Services" section
-      const serviceEls = document.querySelectorAll('div[aria-label*="Services"] li, div[aria-label*="Offerings"] li, div[aria-label*="Amenities"] li');
-      serviceEls.forEach(el => {
+
+      // Amenities/attributes with checkmarks
+      const attrEls = document.querySelectorAll('div[role="region"] li span, div[class*="section"] li');
+      attrEls.forEach(el => {
         const text = el.textContent.trim();
-        if (text && !text.includes('No ')) items.push(text);
+        if (text && text.length > 2 && text.length < 60 && !text.startsWith('No ')) {
+          items.push(text);
+        }
       });
-      // Also try the chips/tags that Google shows
-      const chips = document.querySelectorAll('div.e2moi span, div[class*="category"] span');
-      chips.forEach(el => {
+
+      // Attribute groups (Accessibility, Offerings, etc.)
+      const groups = document.querySelectorAll('div[aria-label] ul li, div[class*="attr"] span');
+      groups.forEach(el => {
         const t = el.textContent.trim();
-        if (t && t.length < 40 && !items.includes(t)) items.push(t);
+        if (t && t.length > 2 && t.length < 50 && !items.includes(t) && !t.startsWith('No ')) {
+          items.push(t);
+        }
       });
-      return items.slice(0, 15).join(', ');
+
+      // Unique only
+      const unique = [...new Set(items)];
+      return unique.slice(0, 20).join(', ');
     }).catch(() => '');
 
-    // Extract hours
-    const hours = await page.evaluate(() => {
-      const hoursTable = document.querySelector('table.eK4R0e, table[class*="hour"]');
-      if (hoursTable) {
-        const rows = [];
-        hoursTable.querySelectorAll('tr').forEach(tr => {
-          const day = tr.querySelector('td:first-child')?.textContent?.trim() || '';
-          const time = tr.querySelector('td:last-child')?.textContent?.trim() || '';
-          if (day && time) rows.push(`${day}: ${time}`);
-        });
-        return rows.join('\n');
-      }
-      // Try the hours button text
-      const hoursBtn = document.querySelector('div[aria-label*="hours"], button[aria-label*="hours"]');
-      return hoursBtn ? hoursBtn.textContent.trim() : '';
-    }).catch(() => '');
+    // Go back to Overview tab for reviews
+    const overviewTab = await page.$('button[aria-label="Overview"]');
+    if (overviewTab) {
+      try {
+        await overviewTab.click();
+        await sleep(1500);
+      } catch (e) {}
+    }
 
-    // Extract review snippets
+    // --- REVIEWS: click Reviews tab and extract ---
+    const reviewsTab = await page.$('button[aria-label="Reviews"]');
+    if (reviewsTab) {
+      try {
+        await reviewsTab.click();
+        await sleep(3000);
+      } catch (e) {}
+    }
+
     const reviews = await page.evaluate(() => {
       const snippets = [];
-      const reviewEls = document.querySelectorAll('div.MyEned span, div[class*="review"] span.wiI7pd');
+      // Review text spans
+      const reviewEls = document.querySelectorAll('span.wiI7pd, div.MyEned span, div[data-review-id] span.wiI7pd');
       reviewEls.forEach(el => {
         const text = el.textContent.trim();
-        if (text.length > 30 && text.length < 500) {
+        if (text.length > 40 && text.length < 600) {
           snippets.push(text);
         }
       });
       return snippets.slice(0, 3).join('\n---\n');
     }).catch(() => '');
 
-    // Extract additional photos
+    // --- PHOTOS: extract from the photos that are visible ---
     const photos = await page.evaluate(() => {
-      const urls = [];
-      const imgs = document.querySelectorAll('button[jsaction*="photo"] img, div[class*="gallery"] img, img[decoding="async"]');
+      const urls = new Set();
+      const imgs = document.querySelectorAll('img[decoding="async"], button[jsaction*="photo"] img, img[src*="googleusercontent"]');
       imgs.forEach(img => {
         const src = img.getAttribute('src') || '';
-        if (src.includes('googleusercontent') && src.includes('=') && !urls.includes(src)) {
-          // Get higher res version
+        if (src.includes('googleusercontent') && src.includes('=') && !src.includes('default_user')) {
           const hiRes = src.replace(/=w\d+-h\d+/, '=w800-h600').replace(/=s\d+/, '=s800');
-          urls.push(hiRes);
+          urls.add(hiRes);
         }
       });
-      return urls.slice(0, 5).join('\n');
+      return [...urls].slice(0, 5).join('\n');
     }).catch(() => '');
 
     result.services = services;
@@ -127,22 +188,17 @@ async function updateRecord(id, fields) {
 }
 
 async function run() {
-  console.log('=== Velora: Enrichment Scraper ===\n');
+  console.log('=== Velora: Enrichment Scraper (EN) ===\n');
 
   const records = await getAllRecords();
-  // Only enrich records that are missing services
-  const toEnrich = records.filter(r => !r.fields.services);
-  console.log(`${toEnrich.length} businesses need enrichment\n`);
+  console.log(`${records.length} total businesses\n`);
 
-  if (!toEnrich.length) {
-    console.log('All businesses already enriched.');
-    return;
-  }
+  if (!records.length) return;
 
   const { browser, context } = await launchBrowser();
   let enriched = 0;
 
-  for (const rec of toEnrich) {
+  for (const rec of records) {
     const name = rec.fields.name;
     const city = rec.fields.city || 'New York';
     console.log(`  ${name}...`);
@@ -150,7 +206,7 @@ async function run() {
     const data = await enrichFromGoogleMaps(context, name, city);
 
     const updates = {};
-    if (data.services) { updates.services = data.services; console.log(`    Services: ${data.services.substring(0, 60)}...`); }
+    if (data.services) { updates.services = data.services; console.log(`    Services: ${data.services.substring(0, 80)}...`); }
     if (data.hours) { updates.hours = data.hours; console.log(`    Hours: found`); }
     if (data.reviews) { updates.reviews = data.reviews; console.log(`    Reviews: ${data.reviews.split('---').length} snippets`); }
     if (data.photos) { updates.photos = data.photos; console.log(`    Photos: ${data.photos.split('\n').length} images`); }
@@ -166,7 +222,7 @@ async function run() {
   }
 
   await browser.close();
-  console.log(`\nEnriched ${enriched} / ${toEnrich.length} businesses`);
+  console.log(`\nEnriched ${enriched} / ${records.length} businesses`);
 }
 
 run().catch(console.error);
