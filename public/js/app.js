@@ -92,7 +92,16 @@ function doSearch(query) {
 }
 
 function loadCategoryPage(category) {
-  document.title = `${category} in New York | Velora`;
+  const seo = CATEGORY_SEO[category] || {};
+  document.title = seo.title || `${category} in New York | Velora`;
+
+  // Update meta description
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc && seo.description) metaDesc.setAttribute('content', seo.description);
+
+  // Update canonical
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.setAttribute('href', `https://velorra.netlify.app/new-york/${CATEGORY_SLUGS[category]}`);
 
   document.querySelector('.hero').classList.add('hidden');
   document.querySelector('.categories').classList.add('hidden');
@@ -100,7 +109,7 @@ function loadCategoryPage(category) {
   document.querySelector('.about').classList.add('hidden');
   document.getElementById('listings').classList.remove('hidden');
   document.getElementById('listings').style.paddingTop = '100px';
-  document.getElementById('listings-title').textContent = `${category} in New York`;
+  document.getElementById('listings-title').textContent = seo.h1 || `${category} in New York`;
 
   const records = filterBusinesses(b => b.category === category);
   const grid = document.getElementById('listings-grid');

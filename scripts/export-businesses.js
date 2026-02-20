@@ -6,6 +6,7 @@ const path = require('path');
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appqDOo8GXTDuKYCw';
 const TABLE = 'Businesses';
+const SITE_URL = 'https://velorra.netlify.app';
 
 async function exportBusinesses() {
   console.log('Exporting businesses from Airtable...');
@@ -53,9 +54,40 @@ async function exportBusinesses() {
     exported_at: new Date().toISOString()
   };
 
-  const outPath = path.join(__dirname, '..', 'public', 'businesses.json');
-  fs.writeFileSync(outPath, JSON.stringify(output));
+  const publicDir = path.join(__dirname, '..', 'public');
+
+  // Write businesses.json
+  fs.writeFileSync(path.join(publicDir, 'businesses.json'), JSON.stringify(output));
   console.log(`Exported ${businesses.length} businesses to public/businesses.json`);
+
+  // Generate sitemap.xml
+  const today = new Date().toISOString().split('T')[0];
+  const categories = ['med-spas', 'private-chefs', 'interior-designers'];
+
+  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE_URL}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+${categories.map(cat => `  <url>
+    <loc>${SITE_URL}/new-york/${cat}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`).join('\n')}
+${businesses.map(b => `  <url>
+    <loc>${SITE_URL}/go/${b.id}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
+  console.log(`Generated sitemap.xml with ${3 + businesses.length} URLs`);
 }
 
 exportBusinesses().catch(console.error);

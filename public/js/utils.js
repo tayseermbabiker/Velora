@@ -6,6 +6,24 @@ const CATEGORY_SLUGS = {
   'Interior Designers': 'interior-designers'
 };
 
+const CATEGORY_SEO = {
+  'Med Spas': {
+    title: 'Best Med Spas in NYC | Luxury Medical Aesthetic Directory | Velora',
+    description: 'Find the top-rated med spas in New York City. Browse our curated list of luxury Botox, filler, laser, and facial professionals serving Manhattan, Brooklyn, and beyond.',
+    h1: 'Best Med Spas in New York City'
+  },
+  'Private Chefs': {
+    title: 'Hire a Private Chef in NYC | Top Personal Chefs & Catering | Velora',
+    description: 'Browse top-rated private chefs in New York City for dinner parties, meal prep, and luxury in-home dining. Find Michelin-level personal chefs serving Manhattan and beyond.',
+    h1: 'Private Chefs in New York City'
+  },
+  'Interior Designers': {
+    title: 'Luxury Interior Designers NYC | High-End Residential Design | Velora',
+    description: 'Discover the best luxury interior designers in New York City. Browse curated listings for high-end residential design firms serving Manhattan, Brooklyn, and beyond.',
+    h1: 'Luxury Interior Designers in New York City'
+  }
+};
+
 const SLUG_TO_CATEGORY = Object.fromEntries(
   Object.entries(CATEGORY_SLUGS).map(([k, v]) => [v, k])
 );

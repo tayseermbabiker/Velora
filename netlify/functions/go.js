@@ -167,10 +167,11 @@ exports.handler = async (event) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escHtml(f.name)} | Velora</title>
-  <meta name="description" content="${escHtml((f.description || f.name + ' in New York').substring(0, 160))}">
-  <meta property="og:title" content="${escHtml(f.name)} | Velora">
-  <meta property="og:description" content="${escHtml((f.description || f.name + ' — ' + (f.category || 'Business') + ' in New York').substring(0, 200))}">
+  <title>${escHtml(f.name)} - Luxury ${escHtml(f.category || 'Services')} in ${escHtml(f.neighborhood || 'NYC')} | Velora</title>
+  <meta name="description" content="${escHtml((f.description || `Discover ${f.name}, a premier luxury ${f.category || 'service'} located in ${f.neighborhood || 'New York City'}. View services, reviews, and book on Velora.`).substring(0, 160))}">
+  <link rel="canonical" href="https://velorra.netlify.app/go/${id}">
+  <meta property="og:title" content="${escHtml(f.name)} - Luxury ${escHtml(f.category || 'Services')} in ${escHtml(f.neighborhood || 'NYC')} | Velora">
+  <meta property="og:description" content="${escHtml((f.description || `${f.name} — ${f.category || 'Business'} in ${f.neighborhood || 'New York'}`).substring(0, 200))}">
   ${f.image_url ? `<meta property="og:image" content="${escHtml(f.image_url)}">` : ''}
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <script type="application/ld+json">${jsonLd}</script>
