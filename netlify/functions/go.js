@@ -175,6 +175,7 @@ exports.handler = async (event) => {
   ${f.image_url ? `<meta property="og:image" content="${escHtml(f.image_url)}">` : ''}
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <script type="application/ld+json">${jsonLd}</script>
+  <script defer data-domain="velorra.netlify.app" src="https://plausible.io/js/script.js"></script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Inter',sans-serif; color:#333; background:#FAFAFA; line-height:1.6; }
