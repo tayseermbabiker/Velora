@@ -3,7 +3,10 @@ const AIRTABLE_BASE_ID = 'appqDOo8GXTDuKYCw';
 const CATEGORY_SLUGS = {
   'Med Spas': 'med-spas',
   'Private Chefs': 'private-chefs',
-  'Interior Designers': 'interior-designers'
+  'Interior Designers': 'interior-designers',
+  'Concierge Medicine': 'concierge-medicine',
+  'Luxury Relocation': 'luxury-relocation',
+  'Fine Art Advisory': 'fine-art-advisory'
 };
 
 const CATEGORY_SEO = {
@@ -21,6 +24,21 @@ const CATEGORY_SEO = {
     title: 'Luxury Interior Designers NYC | High-End Residential Design | Velora',
     description: 'Discover the best luxury interior designers in New York City. Browse curated listings for high-end residential design firms serving Manhattan, Brooklyn, and beyond.',
     h1: 'Luxury Interior Designers in New York City'
+  },
+  'Concierge Medicine': {
+    title: 'Concierge Doctors NYC | Private Physicians & Wellness | Velora',
+    description: 'Find top concierge doctors and private physicians in New York City. Browse curated listings for 24/7 private medical care, IV therapy, and luxury wellness services.',
+    h1: 'Concierge Medicine & Private Wellness in NYC'
+  },
+  'Luxury Relocation': {
+    title: 'White-Glove Movers NYC | Luxury Relocation & Home Organizing | Velora',
+    description: 'Find the best white-glove moving companies and luxury home organizers in New York City. Fine art movers, turnkey relocation, and estate organizing services.',
+    h1: 'Luxury Relocation & Home Organizing in NYC'
+  },
+  'Fine Art Advisory': {
+    title: 'Art Advisors NYC | Fine Art Consultants & Appraisers | Velora',
+    description: 'Discover top art advisors and fine art consultants in New York City. Private art buying, collection management, and appraisal services for discerning collectors.',
+    h1: 'Fine Art Advisors & Consultants in NYC'
   }
 };
 

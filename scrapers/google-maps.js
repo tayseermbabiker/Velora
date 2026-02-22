@@ -2,16 +2,34 @@ require('dotenv').config();
 const { slugify, sleep, pushToAirtable, launchBrowser } = require('./utils');
 
 const SEARCHES = [
+  // Med Spas
   { query: 'med spas upper east side new york', category: 'Med Spas' },
   { query: 'luxury med spa manhattan', category: 'Med Spas' },
   { query: 'best facial spa nyc', category: 'Med Spas' },
   { query: 'aesthetic clinic new york', category: 'Med Spas' },
+  // Private Chefs
   { query: 'private chef new york city', category: 'Private Chefs' },
   { query: 'personal chef service manhattan', category: 'Private Chefs' },
   { query: 'private dining chef nyc', category: 'Private Chefs' },
+  // Interior Designers
   { query: 'luxury interior designer new york', category: 'Interior Designers' },
   { query: 'high end interior design firm manhattan', category: 'Interior Designers' },
-  { query: 'residential interior designer nyc', category: 'Interior Designers' }
+  { query: 'residential interior designer nyc', category: 'Interior Designers' },
+  // Concierge Medicine
+  { query: 'concierge doctor nyc', category: 'Concierge Medicine' },
+  { query: 'private physician manhattan', category: 'Concierge Medicine' },
+  { query: 'at home IV therapy new york', category: 'Concierge Medicine' },
+  { query: 'concierge medicine practice nyc', category: 'Concierge Medicine' },
+  // Luxury Relocation
+  { query: 'white glove movers nyc', category: 'Luxury Relocation' },
+  { query: 'luxury home organizer new york', category: 'Luxury Relocation' },
+  { query: 'fine art movers manhattan', category: 'Luxury Relocation' },
+  { query: 'high end moving company nyc', category: 'Luxury Relocation' },
+  // Fine Art Advisory
+  { query: 'art advisor new york city', category: 'Fine Art Advisory' },
+  { query: 'fine art appraiser manhattan', category: 'Fine Art Advisory' },
+  { query: 'private art consultant nyc', category: 'Fine Art Advisory' },
+  { query: 'art collection management new york', category: 'Fine Art Advisory' }
 ];
 
 async function scrapeGoogleMaps(context, query, category) {
