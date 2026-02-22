@@ -16,20 +16,20 @@ const SEARCHES = [
   { query: 'high end interior design firm manhattan', category: 'Interior Designers' },
   { query: 'residential interior designer nyc', category: 'Interior Designers' },
   // Concierge Medicine
-  { query: 'concierge doctor nyc', category: 'Concierge Medicine' },
+  { query: 'concierge doctor upper east side manhattan', category: 'Concierge Medicine' },
   { query: 'private physician manhattan', category: 'Concierge Medicine' },
-  { query: 'at home IV therapy new york', category: 'Concierge Medicine' },
-  { query: 'concierge medicine practice nyc', category: 'Concierge Medicine' },
+  { query: 'luxury IV therapy tribeca soho', category: 'Concierge Medicine' },
+  { query: 'concierge medicine practice park avenue nyc', category: 'Concierge Medicine' },
   // Luxury Relocation
-  { query: 'white glove movers nyc', category: 'Luxury Relocation' },
-  { query: 'luxury home organizer new york', category: 'Luxury Relocation' },
+  { query: 'white glove movers upper east side manhattan', category: 'Luxury Relocation' },
+  { query: 'luxury home organizer manhattan', category: 'Luxury Relocation' },
   { query: 'fine art movers manhattan', category: 'Luxury Relocation' },
-  { query: 'high end moving company nyc', category: 'Luxury Relocation' },
+  { query: 'high end moving company tribeca soho nyc', category: 'Luxury Relocation' },
   // Fine Art Advisory
-  { query: 'art advisor new york city', category: 'Fine Art Advisory' },
-  { query: 'fine art appraiser manhattan', category: 'Fine Art Advisory' },
-  { query: 'private art consultant nyc', category: 'Fine Art Advisory' },
-  { query: 'art collection management new york', category: 'Fine Art Advisory' }
+  { query: 'art advisor chelsea manhattan gallery district', category: 'Fine Art Advisory' },
+  { query: 'fine art appraiser upper east side', category: 'Fine Art Advisory' },
+  { query: 'private art consultant manhattan nyc', category: 'Fine Art Advisory' },
+  { query: 'art collection management upper east side new york', category: 'Fine Art Advisory' }
 ];
 
 async function scrapeGoogleMaps(context, query, category) {

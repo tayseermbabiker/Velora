@@ -235,15 +235,8 @@ async function run() {
       console.log(`    Address cleaned`);
     }
 
-    // 2. Get full hours from Google Maps
-    const hours = await getFullHours(context, f.name);
-    if (hours && hours.length > (f.hours || '').length) {
-      updates.hours = hours;
-      console.log(`    Hours: ${hours.substring(0, 60)}...`);
-    }
-
-    // 3. Scrape website for description + services
-    if (f.website && !f.website.includes('linktr.ee')) {
+    // 2. Scrape website for description + services
+    if (f.website && !f.website.includes('linktr.ee') && !f.website.includes('instagram.com')) {
       const webData = await scrapeWebsite(context, f.website);
 
       if (webData.description && webData.description.length > (f.description || '').length) {

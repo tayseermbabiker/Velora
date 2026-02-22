@@ -62,7 +62,7 @@ async function exportBusinesses() {
 
   // Generate sitemap.xml
   const today = new Date().toISOString().split('T')[0];
-  const categories = ['med-spas', 'private-chefs', 'interior-designers'];
+  const categories = ['med-spas', 'private-chefs', 'interior-designers', 'concierge-medicine', 'luxury-relocation', 'fine-art-advisory'];
 
   let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -87,7 +87,7 @@ ${businesses.map(b => `  <url>
 </urlset>`;
 
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
-  console.log(`Generated sitemap.xml with ${3 + businesses.length} URLs`);
+  console.log(`Generated sitemap.xml with ${1 + categories.length + businesses.length} URLs`);
 }
 
 exportBusinesses().catch(console.error);
