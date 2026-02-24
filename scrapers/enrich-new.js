@@ -6,7 +6,7 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appqDOo8GXTDuKYCw';
 const TABLE = 'Businesses';
 
-const NEW_CATEGORIES = ['Concierge Medicine', 'Luxury Relocation', 'Fine Art Advisory'];
+const NEW_CATEGORIES = ['Luxury Pet Services', 'Event Planners'];
 
 async function getAllRecords() {
   const records = [];
@@ -75,7 +75,7 @@ async function scrapeWebsite(context, website) {
         'nav a, .menu a, [class*="menu"] a'
       );
 
-      const serviceKeywords = /service|treatment|therapy|iv\b|drip|wellness|vitamin|doctor|physician|concierge|medical|health|consult|moving|relocation|organize|pack|art|gallery|apprais|collect|advis|curator|estate|design|chef|menu|cuisine|facial|botox|filler|laser|peel/i;
+      const serviceKeywords = /service|treatment|therapy|iv\b|drip|wellness|vitamin|doctor|physician|concierge|medical|health|consult|moving|relocation|organize|pack|art|gallery|apprais|collect|advis|curator|estate|design|chef|menu|cuisine|facial|botox|filler|laser|peel|groom|pet|dog|cat|vet|boarding|daycare|spa|walk|train|event|wedding|party|corporate|catering|floral|decor|planner|coordinator|venue/i;
 
       serviceHeadings.forEach(el => {
         const text = el.textContent.trim();

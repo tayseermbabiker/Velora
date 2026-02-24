@@ -6,7 +6,9 @@ const CATEGORY_SLUGS = {
   'Interior Designers': 'interior-designers',
   'Concierge Medicine': 'concierge-medicine',
   'Luxury Relocation': 'luxury-relocation',
-  'Fine Art Advisory': 'fine-art-advisory'
+  'Fine Art Advisory': 'fine-art-advisory',
+  'Luxury Pet Services': 'luxury-pet-services',
+  'Event Planners': 'event-planners'
 };
 
 const CATEGORY_SEO = {
@@ -39,6 +41,16 @@ const CATEGORY_SEO = {
     title: 'Art Advisors NYC | Fine Art Consultants & Appraisers | Velora',
     description: 'Discover top art advisors and fine art consultants in New York City. Private art buying, collection management, and appraisal services for discerning collectors.',
     h1: 'Fine Art Advisors & Consultants in NYC'
+  },
+  'Luxury Pet Services': {
+    title: 'Luxury Pet Services NYC | Premium Pet Spas, Grooming & Hotels | Velora',
+    description: 'Find the best luxury pet services in New York City. Browse curated listings for premium pet spas, dog groomers, veterinary concierge, and pet hotels in Manhattan.',
+    h1: 'Luxury Pet Services in New York City'
+  },
+  'Event Planners': {
+    title: 'Luxury Event Planners NYC | High-End Wedding & Corporate Events | Velora',
+    description: 'Discover top luxury event planners in New York City. Browse curated listings for high-end wedding planners, corporate event designers, and party planners in Manhattan.',
+    h1: 'Luxury Event Planners in New York City'
   }
 };
 
