@@ -1,8 +1,28 @@
 const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appqDOo8GXTDuKYCw';
 const TABLE_NAME = 'Businesses';
+const SITE_URL = process.env.URL || 'https://velorra.netlify.app';
+
+// Cache businesses in memory across warm invocations
+let cachedBusinesses = null;
+let cacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function loadBusinesses() {
+  if (cachedBusinesses && (Date.now() - cacheTime < CACHE_TTL)) {
+    return cachedBusinesses;
+  }
+  const res = await fetch(`${SITE_URL}/businesses.json`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  cachedBusinesses = data.businesses || [];
+  cacheTime = Date.now();
+  return cachedBusinesses;
+}
 
 function escHtml(str) {
   if (!str) return '';
@@ -20,19 +40,19 @@ exports.handler = async (event) => {
   }
 
   try {
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}/${id}`;
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
-    });
+    const businesses = await loadBusinesses();
+    if (!businesses) {
+      return { statusCode: 500, body: 'Could not load businesses data' };
+    }
 
-    if (!res.ok) {
+    const biz = businesses.find(b => b.id === id);
+    if (!biz) {
       return { statusCode: 404, body: 'Business not found' };
     }
 
-    const biz = await res.json();
-    const f = biz.fields;
+    const f = biz;
 
-    // Increment click count (fire and forget)
+    // Increment click count in Airtable (fire and forget — only API call)
     fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}/${id}`, {
       method: 'PATCH',
       headers: {
@@ -47,13 +67,10 @@ exports.handler = async (event) => {
       })
     }).catch(() => {});
 
-    // Fetch related businesses
-    const relatedUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}?filterByFormula=AND({category}="${f.category}",RECORD_ID()!="${id}")&maxRecords=5`;
-    const relatedRes = await fetch(relatedUrl, {
-      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
-    });
-    const relatedData = relatedRes.ok ? await relatedRes.json() : { records: [] };
-    const related = relatedData.records || [];
+    // Related businesses from static data (no API call)
+    const related = businesses
+      .filter(b => b.category === f.category && b.id !== id)
+      .slice(0, 5);
 
     // Build sections conditionally
 
@@ -132,10 +149,10 @@ exports.handler = async (event) => {
         <h2>Similar in ${escHtml(f.category)}</h2>
         ${related.map(r => `
           <a href="/go/${r.id}" class="related-card">
-            ${r.fields.image_url ? `<img src="${escHtml(r.fields.image_url)}" alt="${escHtml(r.fields.name)}" class="related-img">` : `<div class="related-img related-placeholder">${(r.fields.name || '?')[0]}</div>`}
+            ${r.image_url ? `<img src="${escHtml(r.image_url)}" alt="${escHtml(r.name)}" class="related-img">` : `<div class="related-img related-placeholder">${(r.name || '?')[0]}</div>`}
             <div class="related-info">
-              <div class="related-name">${escHtml(r.fields.name)}</div>
-              <div class="related-meta">${escHtml(r.fields.neighborhood || 'New York')}${r.fields.rating ? ' — ' + r.fields.rating + ' stars' : ''}</div>
+              <div class="related-name">${escHtml(r.name)}</div>
+              <div class="related-meta">${escHtml(r.neighborhood || 'New York')}${r.rating ? ' — ' + r.rating + ' stars' : ''}</div>
             </div>
           </a>`).join('')}
       </div>` : '';
