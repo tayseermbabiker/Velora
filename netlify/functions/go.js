@@ -1,10 +1,5 @@
 const fetch = require('node-fetch');
-const fs = require('fs');
-const path = require('path');
 
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appqDOo8GXTDuKYCw';
-const TABLE_NAME = 'Businesses';
 const SITE_URL = process.env.URL || 'https://velorra.netlify.app';
 
 // Cache businesses in memory across warm invocations
@@ -51,21 +46,6 @@ exports.handler = async (event) => {
     }
 
     const f = biz;
-
-    // Increment click count in Airtable (fire and forget — only API call)
-    fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}/${id}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        fields: {
-          click_count: (f.click_count || 0) + 1,
-          last_clicked_at: new Date().toISOString().split('T')[0]
-        }
-      })
-    }).catch(() => {});
 
     // Related businesses from static data (no API call)
     const related = businesses
