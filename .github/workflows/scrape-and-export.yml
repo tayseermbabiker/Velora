@@ -1,9 +1,11 @@
 name: Scrape & Export
 
 on:
-  schedule:
-    # Every Wednesday at 6AM UTC
-    - cron: '0 6 * * 3'
+  # Scheduled run disabled May 2026 — workflow was timing out at 45m on every run
+  # for 3+ months without ever completing, while still burning Airtable API calls.
+  # Re-enable when Velora is revived and the enrichment script is optimized.
+  # schedule:
+  #   - cron: '0 6 * * 3'
   workflow_dispatch: # Manual trigger from GitHub UI
 
 permissions:
